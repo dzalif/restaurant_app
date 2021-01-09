@@ -11,6 +11,8 @@ class RestaurantInitial extends RestaurantState {}
 
 class RestaurantLoading extends RestaurantState {}
 
+class RestaurantNoInternet extends RestaurantState {}
+
 class RestaurantError extends RestaurantState {}
 
 class RestaurantSuccess extends RestaurantState {

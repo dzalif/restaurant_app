@@ -31,6 +31,8 @@ dependencies:
   dio: ^3.0.10
   flutter_bloc: ^6.1.1
   equatable: ^1.2.5
+  rxdart: ^0.25.0
+  flutter_svg: ^0.18.0
 
 dev_dependencies:
   flutter_test:
@@ -51,9 +53,7 @@ flutter:
 
   assets:
     - assets/local_restaurant.json
-    - images/drink-bg.png
-    - images/food-bg.png
-    - images/restaurant-icon.png
+    - assets/images/
 
   fonts:
     - family: Merriweather

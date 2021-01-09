@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/model/detail_restaurant_response.dart';
+import 'package:restaurant_app/network/model/detail_restaurant_response.dart';
 import 'package:restaurant_app/repository/restaurant_repository.dart';
 
 part 'detail_restaurant_event.dart';
@@ -22,6 +23,8 @@ class DetailRestaurantBloc extends Bloc<DetailRestaurantEvent, DetailRestaurantS
       try {
         final DetailRestaurantResponse response = await repository.getDetailRestaurant(event.id);
         yield DetailRestaurantSuccess(restaurant: response);
+      } on Exception {
+        yield DetailRestaurantNoInternet();
       } catch(err) {
         yield DetailRestaurantError();
       }

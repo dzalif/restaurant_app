@@ -7,11 +7,13 @@ abstract class DetailRestaurantState extends Equatable {
   List<Object> get props => [];
 }
 
-class DetailRestaurantLoading extends DetailRestaurantState{}
-
 class DetailRestaurantInitial extends DetailRestaurantState {}
 
+class DetailRestaurantLoading extends DetailRestaurantState{}
+
 class DetailRestaurantError extends DetailRestaurantState {}
+
+class DetailRestaurantNoInternet extends DetailRestaurantState {}
 
 class DetailRestaurantSuccess extends DetailRestaurantState {
   final DetailRestaurantResponse restaurant;

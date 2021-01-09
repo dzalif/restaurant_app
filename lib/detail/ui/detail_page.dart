@@ -3,9 +3,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:restaurant_app/api/api_service.dart';
-import 'package:restaurant_app/bloc/detail/detail_restaurant_bloc.dart';
-import 'package:restaurant_app/model/detail_restaurant_response.dart';
+import 'package:restaurant_app/network/api/api_service.dart';
+import 'package:restaurant_app/detail/bloc/detail_restaurant_bloc.dart';
+import 'package:restaurant_app/network/model/detail_restaurant_response.dart';
 
 class DetailPage extends StatefulWidget {
   static const routeName = '/detail_page';
@@ -25,6 +25,33 @@ class _DetailPageState extends State<DetailPage> {
     super.initState();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomPadding: false,
+      appBar: AppBar(
+        title: Text('Detail Restaurant'),
+      ),
+      body: BlocBuilder<DetailRestaurantBloc, DetailRestaurantState>(
+        builder: (context, state) {
+          if (state is DetailRestaurantInitial) {
+            return _buildLoading();
+          } else if (state is DetailRestaurantLoading) {
+            return _buildLoading();
+          } else if (state is DetailRestaurantNoInternet) {
+            return _buildNoInternet();
+          } else if (state is DetailRestaurantSuccess) {
+            return _buildRestaurant(context, state.restaurant.restaurant);
+          } else if (state is DetailRestaurantError) {
+            return _buildError();
+          } else {
+            return _buildLoading();
+          }
+        },
+      ),
+    );
+  }
+
   Widget _buildLoading() {
     return Container(
       height: MediaQuery.of(context).size.height,
@@ -36,7 +63,14 @@ class _DetailPageState extends State<DetailPage> {
 
   Widget _buildError() {
     return Center(
-      child: Text('There is unknown error'),
+      child: Text('There is unknown error', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+    );
+  }
+
+  Widget _buildNoInternet() {
+    return Center(
+      child: Text('No internet connection, is your device online ?',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
     );
   }
 
@@ -87,6 +121,25 @@ class _DetailPageState extends State<DetailPage> {
             ),
           ),
           Container(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      'Category',
+                      style:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                  ),
+                  _buildCategories(context, restaurant.categories),
+                ],
+              ),
+            ),
+          ),
+          Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -118,6 +171,26 @@ class _DetailPageState extends State<DetailPage> {
               ],
             ),
           ),
+          //REVIEWS
+          Container(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      'Reviews',
+                      style:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                  ),
+                  _buildReviews(context, restaurant.reviews)
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -130,6 +203,21 @@ class _DetailPageState extends State<DetailPage> {
         itemCount: menus.foods.length,
         itemBuilder: (context, index) {
           return _buildFoodItem(context, menus.foods[index]);
+        },
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        physics: ScrollPhysics(),
+      ),
+    );
+  }
+
+  Widget _buildCategories(BuildContext context, List<Category> categories) {
+    return Container(
+      height: 60,
+      child: ListView.builder(
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          return _buildCategoryItem(context, categories[index]);
         },
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
@@ -201,28 +289,50 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Detail Restaurant'),
-        backgroundColor: Colors.orange,
-      ),
-      body: BlocBuilder<DetailRestaurantBloc, DetailRestaurantState>(
-        builder: (context, state) {
-          if (state is DetailRestaurantInitial) {
-            return _buildLoading();
-          } else if (state is DetailRestaurantLoading) {
-            return _buildLoading();
-          } else if (state is DetailRestaurantSuccess) {
-            return _buildRestaurant(context, state.restaurant.restaurant);
-          } else if (state is DetailRestaurantError) {
-            return _buildError();
-          } else {
-            return _buildLoading();
-          }
-        },
+  Widget _buildCategoryItem(BuildContext context, Category category) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.0),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[Colors.green, Colors.lightGreen],
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(category.name, style: TextStyle(color: Colors.white)),
+            ),
+          )
+        ],
       ),
     );
   }
+
+  Widget _buildReviews(BuildContext context, List<Review> reviews) {
+    return Container(
+      height: 60,
+      child: ListView.builder(
+        itemCount: reviews.length,
+        itemBuilder: (context, index) {
+          return _buildReviewItem(context, reviews[index]);
+        },
+        shrinkWrap: true,
+        physics: ScrollPhysics(),
+      ),
+    );
+  }
+
+  Widget _buildReviewItem(BuildContext context, Review review) {
+    return ListTile(
+      leading: Icon(Icons.account_circle),
+      title: Text(review.name),
+      subtitle: Text(review.review),
+    );
+  }
+
 }

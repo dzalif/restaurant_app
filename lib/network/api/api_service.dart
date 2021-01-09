@@ -1,7 +1,8 @@
-import 'package:restaurant_app/api/logging_interceptors.dart';
-import 'package:restaurant_app/model/detail_restaurant_response.dart';
-import 'package:restaurant_app/model/restaurant_response.dart';
+import 'package:restaurant_app/network/api/logging_interceptors.dart';
+import 'package:restaurant_app/network/model/detail_restaurant_response.dart';
+import 'package:restaurant_app/network/model/restaurant_response.dart';
 import 'package:dio/dio.dart';
+import 'package:restaurant_app/network/model/search_restaurant_response.dart';
 
 class ApiService {
   static const BASE_URL = "https://restaurant-api.dicoding.dev/";
@@ -37,6 +38,15 @@ class ApiService {
     try {
       Response response = await dio.get('detail/$id');
       return DetailRestaurantResponse.fromJson(response.data);
+    } catch(err)  {
+      throw Exception('Exception $err');
+    }
+  }
+
+  Future<SearchRestaurantResponse> searchRestaurant(String query) async {
+    try {
+      Response response = await dio.get('search', queryParameters: {"q": query});
+      return SearchRestaurantResponse.fromJson(response.data);
     } catch(err)  {
       throw Exception('Exception $err');
     }

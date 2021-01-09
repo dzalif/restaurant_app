@@ -2,10 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:restaurant_app/api/api_service.dart';
-import 'package:restaurant_app/bloc/list/restaurant_bloc.dart';
-import 'package:restaurant_app/model/restaurant_response.dart';
-import 'package:restaurant_app/ui/detail_page.dart';
+import 'package:restaurant_app/network/api/api_service.dart';
+import 'package:restaurant_app/home/bloc/restaurant_bloc.dart';
+import 'package:restaurant_app/network/model/restaurant_response.dart';
+import 'package:restaurant_app/detail/ui/detail_page.dart';
+import 'package:restaurant_app/search/ui/search_page.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/home_page';
@@ -32,7 +33,17 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildError() {
     return Center(
-      child: Text('There is unknown error'),
+      child: Text('There is unknown error', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+    );
+  }
+
+  Widget _buildNoInternet() {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      child: Center(
+        child: Text('No internet connection, is your device online ?',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      ),
     );
   }
 
@@ -55,7 +66,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildRestaurantItem(BuildContext context, Restaurant restaurant) {
-    return  GestureDetector(
+    return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, DetailPage.routeName,
             arguments: restaurant.id);
@@ -152,7 +163,7 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-
+              Navigator.pushNamed(context, SearchPage.routeName);
             },
           )
         ],
@@ -181,6 +192,8 @@ class _HomePageState extends State<HomePage> {
                       return _buildLoading();
                     } else if (state is RestaurantSuccess) {
                       return _buildList(context, state.restaurants);
+                    } else if(state is RestaurantNoInternet) {
+                      return _buildNoInternet();
                     } else if (state is RestaurantError) {
                       return _buildError();
                     } else {

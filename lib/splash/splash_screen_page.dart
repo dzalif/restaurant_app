@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-import 'home_page.dart';
+import '../home/ui/home_page.dart';
 
 class SplashScreenPage extends StatefulWidget {
   static const routeName = '/splash_screen_page';
@@ -26,7 +27,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
       body: Center(child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('images/restaurant-icon.png', width: 50, height: 50),
+          SvgPicture.asset('assets/images/ic_restaurant.svg', width: 50, height: 50),
           SizedBox(height: 8.0),
           Text('Loading...')
         ],
